@@ -15,13 +15,13 @@ class ViewController: UIViewController {
     var oper : String = ""
     var result : Double = 0.0
     var nums = [Double]()
+    var calculation : String = "" // to form a complete operation
+    var history: [String] = []
     
     
     override func viewDidLoad() {
         super.viewDidLoad()
         // Do any additional setup after loading the view, typically from a nib.
-        
-        output.text = "\(result)"
         
     }
 
@@ -30,16 +30,16 @@ class ViewController: UIViewController {
         // Dispose of any resources that can be recreated.
     }
     
-    
     // number 0 - 9 button pressed function
     @IBAction func input(sender: UIButton) {
         num = num * 10 + strToNum(sender.titleLabel!.text!)
         output.text = "\(num)"
+        calculation += "\(output.text!) "
         
     }
     
     // outputs the result
-    @IBOutlet weak var output: UITextField!
+    @IBOutlet weak var output: UILabel!
     
     
     @IBAction func operation(sender: UIButton) {
@@ -49,7 +49,9 @@ class ViewController: UIViewController {
         }
         
         nums.append(num)
+        
         oper = sender.titleLabel!.text!
+        calculation += "\(oper) "
         switch oper {
             case "=" :
                 switch prevOper {
@@ -71,6 +73,7 @@ class ViewController: UIViewController {
                     default: break
                 }
                 output.text = "\(result)"
+                calculation += "\(String(result)) "
             
             case "fact" :
                 if nums.count == 1 && num % 1 == 0.0 {
@@ -84,6 +87,7 @@ class ViewController: UIViewController {
                 prevOper = oper
                 num = 0
         }
+        
     }
 
     // Reset button to clear previous calculation
@@ -119,6 +123,13 @@ class ViewController: UIViewController {
     // converts the given string to a double
     func strToNum(str: String) -> Double{
         return Double(str)!
+    }
+
+    override func prepareForSegue(segue: UIStoryboardSegue, sender: AnyObject?) {
+        history.append(calculation) // store the complete operator
+        
+        let displayhist: DisplayHistoryViewController = segue.destinationViewController as! DisplayHistoryViewController
+        displayhist.receivedStr = history.joinWithSeparator("\n")
     }
 
 }
